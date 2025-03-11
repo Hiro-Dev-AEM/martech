@@ -12,7 +12,13 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
-
+import {
+  initMartech,
+  updateUserConsent,
+  martechEager,
+  martechLazy,
+  martechDelayed,
+} from '../plugins/martech/src/index.js';
 /**
  * Builds hero block and prepends to main in a new section.
  * @param {Element} main The container element
@@ -123,7 +129,13 @@ function loadDelayed() {
 async function loadPage() {
   await loadEager(document);
   await loadLazy(document);
-  loadDelayed();
+  loadDelayed()function loadDelayed() {
+    // eslint-disable-next-line import/no-cycle
+    window.setTimeout(() => {
+      martechDelayed();
+      return import('./delayed.js');
+    }, 3000);
+  };
 }
 
 loadPage();
