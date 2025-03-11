@@ -101,6 +101,8 @@ async function loadEager(doc) {
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
+await martechLazy();
+sampleRUM('lazy');
 async function loadLazy(doc) {
   const main = doc.querySelector('main');
   await loadSections(main);
