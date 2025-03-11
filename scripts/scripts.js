@@ -101,8 +101,7 @@ async function loadEager(doc) {
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
-await martechLazy();
-sampleRUM('lazy');
+
 async function loadLazy(doc) {
   const main = doc.querySelector('main');
   await loadSections(main);
@@ -128,16 +127,15 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
+function loadDelayed() {
+  // eslint-disable-next-line import/no-cycle
+  window.setTimeout(() => {
+    martechDelayed();
+    return import('./delayed.js');
+  }, 3000);
+};
 async function loadPage() {
   await loadEager(document);
   await loadLazy(document);
-  loadDelayed()function loadDelayed() {
-    // eslint-disable-next-line import/no-cycle
-    window.setTimeout(() => {
-      martechDelayed();
-      return import('./delayed.js');
-    }, 3000);
-  };
 }
-
 loadPage();
