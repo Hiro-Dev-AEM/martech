@@ -13,68 +13,6 @@ import {
   loadCSS,
 } from './aem.js';
 
-import {
-  initMartech,
-  updateUserConsent,
-  martechEager,
-  martechLazy,
-  martechDelayed,
-} from '../plugins/martech/src/index.js';
-
-const isConsentGiven = true;
-const martechLoadedPromise = initMartech(
-  // The WebSDK config
-  // Documentation: https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/commands/configure/overview#configure-js
-  {
-    datastreamId: "0bf25ee0-a72f-4430-9f53-0a9319d1513c",
-    orgId: "907075E95BF479EC0A495C73@AdobeOrg",
-    defaultConsent: 'in',
-    onBeforeEventSend: (payload) => {
-      // set custom Target params
-      // see doc at https://experienceleague.adobe.com/en/docs/platform-learn/migrate-target-to-websdk/send-parameters#parameter-mapping-summary
-      payload.data.__adobe.target ||= {};
-
-      // set custom Analytics params
-      // see doc at https://experienceleague.adobe.com/en/docs/analytics/implementation/aep-edge/data-var-mapping
-      payload.data.__adobe.analytics ||= {};
-    },
-
-    // set custom datastream overrides
-    // see doc at:
-    // - https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/commands/datastream-overrides
-    // - https://experienceleague.adobe.com/en/docs/experience-platform/datastreams/overrides
-    edgeConfigOverrides: {
-      // Override the datastream id
-      // datastreamId: '...'
-
-      // Override AEP event datasets
-      // com_adobe_experience_platform: {
-      //   datasets: {
-      //     event: {
-      //       datasetId: '...'
-      //     }
-      //   }
-      // },
-
-      // Override the Analytics report suites
-      // com_adobe_analytics: {
-      //   reportSuites: ['...']
-      // },
-
-      // Override the Target property token
-      // com_adobe_target: {
-      //   propertyToken: '...'
-      // }
-    },
-  },
-  // The library config
-  {
-    launchUrls: ["https://assets.adobedtm.com/b754ed1bed61/f1c754de4974/launch-79a2f80b0a49-development.min.js"],
-    personalization: !!getMetadata('target') && isConsentGiven,
-  },
-);
-
-
 /**
  * Builds hero block and prepends to main in a new section.
  * @param {Element} main The container element
@@ -153,16 +91,6 @@ async function loadEager(doc) {
   }
 }
 
-const main = doc.querySelector('main');
-  if (main) {
-    decorateMain(main);
-    document.body.classList.add('appear');
-    await Promise.all([
-      martechLoadedPromise.then(martechEager),
-      loadSection(main.querySelector('.section'), waitForFirstImage)
-    ]);
-  }
-
 /**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
@@ -170,8 +98,6 @@ const main = doc.querySelector('main');
 async function loadLazy(doc) {
   const main = doc.querySelector('main');
   await loadSections(main);
-
-  await martechLazy();
 
   const { hash } = window.location;
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
@@ -192,35 +118,12 @@ function loadDelayed() {
   // eslint-disable-next-line import/no-cycle
   window.setTimeout(() => import('./delayed.js'), 3000);
   // load anything that can be postponed to the latest here
-
-window.setTimeout(() => {
-  martechDelayed();
-  return import('./delayed.js');
-}, 3000);
-
 }
 
-window.adobeDataLayer.push({
-  pageContext: {
-    pageType,
-    pageName: document.title,
-    eventType: 'visibilityHidden',
-    maxXOffset: 0,
-    maxYOffset: 0,
-    minXOffset: 0,
-    minYOffset: 0,
-  },
-  _experienceplatform: {
-    identification:{
-      core:{
-        ecid: sessionStorage.getItem("com.adobe.reactor.dataElements.ECID")
-      }
-    }
-  },
-  web: {
-    webPageDetails:{
-      name: document.title,
-      URL: window.location.href
-    }
-  }
-});
+async function loadPage() {
+  await loadEager(document);
+  await loadLazy(document);
+  loadDelayed();
+}
+
+loadPage();
