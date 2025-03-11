@@ -23,7 +23,6 @@ import {
  * loads everything needed to get to LCP.
 */
 async function loadEager(doc) {
-  const isConsentGiven = /* hook in your consent check here to make sure you can run personalization use cases. */;
   const martechLoadedPromise = initMartech(
     // The WebSDK config
     // Documentation: https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/commands/configure/overview#configure-js
