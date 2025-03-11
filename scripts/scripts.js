@@ -122,7 +122,7 @@ const martechLoadedPromise = initMartech(
   // The library config
   {
     launchUrls: ["https://assets.adobedtm.com/b754ed1bed61/f1c754de4974/launch-79a2f80b0a49-development.min.js"],
-    personalization: !!getMetadata('target') && isConsentGiven,
+/*    personalization: !!getMetadata('target') && isConsentGiven, */
   },
 );
 
