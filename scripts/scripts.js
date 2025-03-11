@@ -12,16 +12,7 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
-import {
-  initMartech,
-  updateUserConsent,
-  martechEager,
-  martechLazy,
-  martechDelayed,
-} from '../plugins/martech/src/index.js';
-/**
- * loads everything needed to get to LCP.
-*/
+
 /**
  * Builds hero block and prepends to main in a new section.
  * @param {Element} main The container element
@@ -81,59 +72,6 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-
-  const martechLoadedPromise = initMartech(
-    // The WebSDK config
-    // Documentation: https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/commands/configure/overview#configure-js
-    {
-      datastreamId:"0bf25ee0-a72f-4430-9f53-0a9319d1513c" /* your datastream id here, formally edgeConfigId */,
-      orgId:"907075E95BF479EC0A495C73@AdobeOrg" /* your ims org id here */,
-      onBeforeEventSend: (payload) => {
-        // set custom Target params 
-        // see doc at https://experienceleague.adobe.com/en/docs/platform-learn/migrate-target-to-websdk/send-parameters#parameter-mapping-summary
-        payload.data.__adobe.target ||= {};
-
-        // set custom Analytics params
-        // see doc at https://experienceleague.adobe.com/en/docs/analytics/implementation/aep-edge/data-var-mapping
-        payload.data.__adobe.analytics ||= {};
-      },
-
-      // set custom datastream overrides
-      // see doc at:
-      // - https://experienceleague.adobe.com/en/docs/experience-platform/web-sdk/commands/datastream-overrides
-      // - https://experienceleague.adobe.com/en/docs/experience-platform/datastreams/overrides
-      edgeConfigOverrides: {
-        // Override the datastream id
-        // datastreamId: '...'
-
-        // Override AEP event datasets
-        // com_adobe_experience_platform: {
-        //   datasets: {
-        //     event: {
-        //       datasetId: '...'
-        //     }
-        //   }
-        // },
-
-        // Override the Analytics report suites
-        // com_adobe_analytics: {
-        //   reportSuites: ['...']
-        // },
-
-        // Override the Target property token
-        // com_adobe_target: {
-        //   propertyToken: '...'
-        // }
-      },
-    },
-    // The library config
-    {
-      launchUrls: ["https://assets.adobedtm.com/b754ed1bed61/f1c754de4974/launch-79a2f80b0a49-development.min.js"/* your Launch script URLs here */],
-      personalization: !!getMetadata('target') && isConsentGiven,
-    },
-  );
-
-
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
