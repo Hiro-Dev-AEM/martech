@@ -12,6 +12,13 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import {
+  initMartech,
+  updateUserConsent,
+  martechEager,
+  martechLazy,
+  martechDelayed,
+} from '../plugins/martech/src/index.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
