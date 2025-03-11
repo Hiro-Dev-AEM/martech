@@ -103,6 +103,9 @@ async function loadEager(doc) {
  */
 
 async function loadLazy(doc) {
+
+  await martechLazy();
+
   const main = doc.querySelector('main');
   await loadSections(main);
 
